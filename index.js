@@ -4,37 +4,64 @@ const app = express();
 app.use(express.json());
 
 let produtos = [];
-
-app.get("/produtos/:id", (req, res) => {
-    const { id } = req.params;
-    res.json(produtos[id]);
-});
+let contadorId = 1;
 
 app.get("/produtos", (req, res) => {
     res.json(produtos);
 });
 
-app.post("/produtos", (req,res) => {
-    const { nome, preco, marca } = req.body;
-    produtos.push({nome, preco, marca});
+app.get("/produtos/:id", (req, res) => {
+    const { id } = req.params;
+    const produto = produtos.find(p => p.id == id);
 
-    res.json(produtos);
+    if (!produto) {
+        return res.status(404).json({ message: "Produto não encontrado" });
+    }
+
+    res.json(produto);
+});
+
+app.post("/produtos", (req, res) => {
+    const { nome, preco, marca } = req.body;
+
+    const novoProduto = {
+        id: contadorId++,
+        nome,
+        preco,
+        marca
+    };
+
+    produtos.push(novoProduto);
+
+    res.status(201).json(novoProduto);
 });
 
 app.put("/produtos/:id", (req, res) => {
     const { id } = req.params;
     const { nome, preco, marca } = req.body;
 
-    produtos[id] = { nome, preco, marca };
-    res.json(produtos);
+    const produto = produtos.find(p => p.id == id);
+
+    if (!produto) {
+        return res.status(404).json({ message: "Produto não encontrado" });
+    }
+
+    produto.nome = nome || produto.nome;
+    produto.preco = preco || produto.preco;
+    produto.marca = marca || produto.marca;
+
+    res.json(produto);
 });
 
 app.delete("/produtos/:id", (req, res) => {
     const { id } = req.params;
-    produtos.splice(id, 1);
-    res.json({message: "Produto deletado com sucesso!"});
-});
+    const index = produtos.findIndex(p => p.id == id);
 
-app.listen(3000, () => {
-    console.log("Servidor rodando na porta 3000");
+    if (index === -1) {
+        return res.status(404).json({ message: "Produto não encontrado" });
+    }
+
+    produtos.splice(index, 1);
+
+    res.json({ message: "Produto deletado com sucesso!" });
 });
