@@ -46,12 +46,13 @@ app.put("/produtos/:id", (req, res) => {
         return res.status(404).json({ message: "Produto não encontrado" });
     }
 
-    produto.nome = nome || produto.nome;
-    produto.preco = preco || produto.preco;
-    produto.marca = marca || produto.marca;
+    if (nome !== undefined) produto.nome = nome;
+    if (preco !== undefined) produto.preco = preco;
+    if (marca !== undefined) produto.marca = marca;
 
     res.json(produto);
 });
+
 
 app.delete("/produtos/:id", (req, res) => {
     const { id } = req.params;
