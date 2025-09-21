@@ -65,3 +65,8 @@ app.delete("/produtos/:id", (req, res) => {
 
     res.json({ message: "Produto deletado com sucesso!" });
 });
+
+app.listen(3000, () => {
+    console.log("Servidor rodando na porta 3000");
+});
+
